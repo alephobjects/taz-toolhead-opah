@@ -1,0 +1,10 @@
+{
+  "builtInLibrariesFolders": "/home/aleph/phabricator_firmware/marlin-ssh/ArduinoAddons/Arduino_1.6.x/libraries",
+  "customBuildProperties": "build.warn_data_percentage=75",
+  "fqbn": "arduino:avr:rambo",
+  "hardwareFolders": "/home/aleph/phabricator_firmware/marlin-ssh/ArduinoAddons/Arduino_1.6.x/hardware",
+  "otherLibrariesFolders": "/home/aleph/phabricator_firmware/marlin-ssh/ArduinoAddons/Arduino_1.6.x/libraries",
+  "runtime.ide.version": "10608",
+  "sketchLocation": "/home/aleph/phabricator_firmware/marlin-ssh/Marlin/Marlin.ino",
+  "toolsFolders": "../ArduinoAddons/Arduino_1.6.x/hardware/tools/tools-builder,../ArduinoAddons/Arduino_1.6.x/hardware/tools/avr"
+}
