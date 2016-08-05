@@ -2196,10 +2196,15 @@ void process_commands()
               clear_buffer();
               reprobe_attempts[0] = 0;
               reprobe_attempts[1] = 0;
-              do_blocking_move_to(current_position[X_AXIS], current_position[Y_AXIS], 10.0);
+              do_blocking_move_to(145.0, current_position[Y_AXIS], 100.0);
               plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], 0.0, feedrate/60, active_extruder);
               st_synchronize();
               plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+              st_synchronize();
+              disable_e0();
+              disable_e1();
+              disable_e2();
+              finishAndDisableSteppers();
               acceleration = DEFAULT_ACCELERATION;
               tone(BEEPER, 1750);
               delay(750);
@@ -2929,7 +2934,13 @@ Sigma_Exit:
 #if defined (THERMAL_RUNAWAY_PROTECTION_PERIOD) && THERMAL_RUNAWAY_PROTECTION_PERIOD > 0
       target_temp_reached[EXTRUDERS] = false;
 #endif
-      if (code_seen('S')) setTargetBed(code_value());
+      if (code_seen('S'))
+      {
+        uint8_t bedtemp = code_value();
+        if(bedtemp > BED_MAXTEMP)
+          bedtemp = BED_MAXTEMP;
+        setTargetBed(bedtemp);
+      }
       break;
     case 105 : // M105
       if(setTargetedHotend(105)){
@@ -3119,14 +3130,20 @@ Sigma_Exit:
         target_temp_reached[EXTRUDERS] = false;
 #endif
         if (code_seen('S')) {
-          setTargetBed(code_value());
+          uint8_t bedtemp = code_value();
+          if(bedtemp > BED_MAXTEMP)
+            bedtemp = BED_MAXTEMP;
+          setTargetBed(bedtemp);
           if(degTargetBed() > degBed())
             LCD_MESSAGEPGM(MSG_BED_HEATING);
           else
             LCD_MESSAGEPGM(MSG_BED_COOLING);
           CooldownNoWait = true;
         } else if (code_seen('R')) {
-          setTargetBed(code_value());
+          uint8_t bedtemp = code_value();
+          if(bedtemp > BED_MAXTEMP)
+            bedtemp = BED_MAXTEMP;
+          setTargetBed(bedtemp);
           CooldownNoWait = false;
         }
         codenum = millis();
@@ -3439,14 +3456,20 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN(((READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
       #endif
       #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
+        SET_INPUT(Z_MIN_PIN);
+        WRITE(Z_MIN_PIN, HIGH);
         SERIAL_PROTOCOLPGM(MSG_Z_MIN);
-        SERIAL_PROTOCOLLN("disabled unless homing");
-        //SERIAL_PROTOCOLLN(((READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        SERIAL_PROTOCOLLN(((READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        SET_OUTPUT(Z_MIN_PIN); //Disable Z_MIN when not in use
+        WRITE(Z_MIN_PIN, LOW);
       #endif
       #if defined(Z_PROBE_PIN) && Z_PROBE_PIN > -1
+        SET_INPUT(Z_PROBE_PIN);
+        WRITE(Z_PROBE_PIN, HIGH);
         SERIAL_PROTOCOLPGM(MSG_Z_PROBE);
-        SERIAL_PROTOCOLLN("disabled unless probing");
-        //SERIAL_PROTOCOLLN(((READ(Z_PROBE_PIN)^Z_PROBE_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        SERIAL_PROTOCOLLN(((READ(Z_PROBE_PIN)^Z_PROBE_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        SET_OUTPUT(Z_PROBE_PIN); //Disable Z_PROBE when not in use
+        WRITE(Z_PROBE_PIN, LOW);
       #endif
       #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
         SERIAL_PROTOCOLPGM(MSG_Z_MAX);
