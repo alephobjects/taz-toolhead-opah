@@ -1,0 +1,6 @@
+[submodule "software/firmware/Marlin_Olivebranch_Opah_v1.0.2.20_2305eba"]
+	path = software/firmware/Marlin_Olivebranch_Opah_v1.0.2.20_2305eba
+	url = https://code.alephobjects.com/diffusion/MARLIN/marlin.git
+[submodule "software/firmware/Marlin_TAZ45_Opah_v1.0.1.1"]
+	path = software/firmware/Marlin_TAZ45_Opah_v1.0.1.1
+	url = https://code.alephobjects.com/diffusion/MARLIN/marlin.git
